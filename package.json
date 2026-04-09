@@ -1,0 +1,12 @@
+{
+  "name": "@darkrideapp/plugin-mqtt-decoder",
+  "version": "1.0.0",
+  "private": false,
+  "keywords": ["darkride-plugin"],
+  "description": "MQTT protocol decoder for DarkRide traffic inspector",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darkrideapp/plugin-mqtt-decoder.git"
+  }
+}
