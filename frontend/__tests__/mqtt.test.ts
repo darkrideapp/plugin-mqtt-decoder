@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readRemainingLength, readMqttString, parseMqttPacket, parseFrame, mqttDecoder } from '../mqtt';
-import type { RawFrame } from '../../../../frontend/lib/protocol-decoders/types';
+import type { RawFrame } from '@darkrideapp/plugin-sdk/react';
 
 /** Helper: build a Uint8Array from byte values */
 function bytes(...values: number[]): Uint8Array {

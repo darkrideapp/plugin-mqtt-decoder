@@ -20,18 +20,32 @@ MQTT is a lightweight publish/subscribe messaging protocol widely used in IoT, m
 
 ## Install
 
-```bash
-cd plugins
-git clone https://github.com/darkrideapp/plugin-mqtt-decoder.git mqtt-decoder
-cd ..
-npm install
-```
+From the DarkRide host:
 
-Restart DarkRide. The MQTT decoder will automatically activate when MQTT-over-WebSocket traffic is captured.
+- **Via the Marketplace UI** — open `/ui/marketplace`, find "MQTT Decoder", click **Install**, then click **Restart Server** when prompted.
+- **Via the CLI** — `darkride plugin install @darkrideapp/plugin-mqtt-decoder` then restart the server.
+
+The decoder activates automatically as soon as a captured WebSocket connection's `Sec-WebSocket-Protocol` header contains `mqtt`.
 
 ## Note on Raw TCP MQTT
 
 This plugin currently decodes MQTT over WebSocket only. Raw TCP MQTT support (port 1883/8883) requires a core DarkRide feature for TCP stream capture that is planned for a future release.
+
+## Development
+
+```sh
+git clone https://github.com/DarkRideApp/plugin-mqtt-decoder.git
+cd plugin-mqtt-decoder
+npm install
+npm test
+npm run build
+```
+
+To test against a local DarkRide checkout, drop this repo into the host's `plugins/` directory; the host's Vite glob picks it up as an in-tree workspace plugin and HMR works through `npm run dev`.
+
+## Publishing
+
+Tag and push to `main`; the GitHub Actions workflow publishes to npm on every `v*` tag. After publish, bump the plugin registry's `latestVersion` so the host UI offers the new version.
 
 ## License
 

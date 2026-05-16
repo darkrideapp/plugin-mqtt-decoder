@@ -1,4 +1,4 @@
-import type { ProtocolDecoder, RawFrame, DecodedMessage } from '../../../frontend/lib/protocol-decoders/types';
+import type { ProtocolDecoder, RawFrame, DecodedMessage } from '@darkrideapp/plugin-sdk/react';
 
 // MQTT Control Packet Types (4-bit, upper nibble of byte 1)
 const PACKET_TYPES: Record<number, string> = {

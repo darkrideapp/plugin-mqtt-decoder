@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Build + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install
+        run: npm install --legacy-peer-deps
+      - name: Typecheck + build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Clean-install singleton check
+        # Pack the tarball and install it into a throwaway prefix; fail if
+        # react/react-dom/react-router-dom/@darkrideapp/plugin-sdk/lucide-react
+        # show up in node_modules. Those must stay peer-only — duplicates
+        # break singleton React + the host's plugin registry. (See
+        # darkride-ops launch-blockers memo 2026-05-10.)
+        run: |
+          npm pack
+          mkdir -p /tmp/install-check
+          cd /tmp/install-check
+          npm init -y >/dev/null
+          npm install --legacy-peer-deps ${{ github.workspace }}/darkrideapp-plugin-*.tgz
+          for forbidden in react react-dom react-router-dom @darkrideapp/plugin-sdk lucide-react; do
+            if [ -d "node_modules/$forbidden" ]; then
+              echo "::error::Forbidden dependency $forbidden was pulled in — must be peer-only"
+              exit 1
+            fi
+          done
+
+  publish:
+    name: Publish to npm (on tag)
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install --legacy-peer-deps
+      - run: npm run build
+      - name: Publish
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
